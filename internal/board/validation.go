@@ -30,26 +30,26 @@ func newValueError(value int) error {
 	}
 }
 
-func newInvalidMoveError_Row(row, col, value int) error {
-	return &ValidationError{
-		Field:   "Row",
-		Problem: "Value exists in Row",
-		Value:   fmt.Sprintf("row=%d, col=%d, value=%d", row, col, value),
-	}
-}
+// func newInvalidMoveError_Row(row, col, value int) error {
+// 	return &ValidationError{
+// 		Field:   "Row",
+// 		Problem: "Value exists in Row",
+// 		Value:   fmt.Sprintf("row=%d, col=%d, value=%d", row, col, value),
+// 	}
+// }
 
-func newInvalidMoveError_Col(row, col, value int) error {
-	return &ValidationError{
-		Field:   "Col",
-		Problem: "Value exists in Col",
-		Value:   fmt.Sprintf("row=%d, col=%d, value=%d", row, col, value),
-	}
-}
+// func newInvalidMoveError_Col(row, col, value int) error {
+// 	return &ValidationError{
+// 		Field:   "Col",
+// 		Problem: "Value exists in Col",
+// 		Value:   fmt.Sprintf("row=%d, col=%d, value=%d", row, col, value),
+// 	}
+// }
 
-func newInvalidMoveError_Box(row, col, value int) error {
-	return &ValidationError{
-		Field:   "Box",
-		Problem: "Value exists in Box",
-		Value:   fmt.Sprintf("row=%d, col=%d, value=%d", row, col, value),
-	}
-}
+// func newInvalidMoveError_Box(row, col, value int) error {
+// 	return &ValidationError{
+// 		Field:   "Box",
+// 		Problem: "Value exists in Box",
+// 		Value:   fmt.Sprintf("row=%d, col=%d, value=%d", row, col, value),
+// 	}
+// }

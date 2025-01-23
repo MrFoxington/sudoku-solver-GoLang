@@ -28,11 +28,14 @@ func run() error {
 	b.Print()
 
 	s := solver.NewBacktrackingSolver()
-	solved, err := s.Solve(b)
+	itter := 0
+	solved, err := s.Solve(b, 0, &itter)
 	if err != nil {
+		log.Printf("Error occurred: %v", err)
 		log.Fatal(err)
 	}
 	if solved {
+		fmt.Println("SOLVED!")
 		fmt.Println("SOLVED!")
 		b.Print()
 	}

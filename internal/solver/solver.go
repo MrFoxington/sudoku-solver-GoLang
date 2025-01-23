@@ -2,6 +2,9 @@ package solver
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
+	"runtime"
 	"sudoku-solver/internal/board"
 )
 
@@ -17,48 +20,51 @@ func NewBacktrackingSolver() *BacktrackingSolver {
 	return &BacktrackingSolver{}
 }
 
-var itter = 0
-
-func (s *BacktrackingSolver) Solve(b *board.Board) (bool, error) {
-	itter++
-	fmt.Println("Itteration: %d", itter)
+func (s *BacktrackingSolver) Solve(b *board.Board, depth int, itter *int) (bool, error) {
+	*itter++
+	fmt.Printf("Running at Depth: %d - Itter: %d \n", depth, *itter)
 	// Find empty cell
 	row, col, found := findEmptyCell(b)
 	if !found {
-		// No empty cells means we've solved the puzzle
+		// TODO: Check and confirm is puzzle solved sucesfully.
 		return true, nil
 	}
 
+	// ForEach Number
+	// Check to see if Valid
+	// If Valid, Place Number
+	// Pass Board forwards for next Itteration.
 	// Try digits 1-9
 	for num := 1; num <= 9; num++ {
-		// Check if number is valid in this position
 		valid, err := b.IsValidMove(row, col, num)
 		if err != nil {
 			return false, err
 		}
 
-		if valid {
-			// Try this number
-			err := b.SetValue(row, col, num)
-			if err != nil {
-				return false, err
-			}
-
-			// Recursively solve rest of the board
-			solved, err := s.Solve(b)
-			if err != nil {
-				return false, err
-			}
-			if solved {
-				return true, nil
-			}
-
-			// If not solved, backtrack by clearing the cell
-			err = b.SetValue(row, col, 0)
-			if err != nil {
-				return false, err
-			}
+		if !valid {
+			continue
 		}
+		err = b.SetValue(row, col, num)
+		if err != nil {
+			return false, err
+		}
+
+		// Lets Watch it go BURR
+		clearScreen()
+		b.Print()
+
+		solved, err := s.Solve(b, depth+1, itter)
+		if err != nil {
+			return false, err
+		}
+
+		if solved {
+			return true, nil
+		} else {
+			// Reset for Next Itteration
+			b.SetValue(row, col, 0)
+		}
+
 	}
 
 	// No valid solution found
@@ -79,4 +85,17 @@ func findEmptyCell(b *board.Board) (row, col int, found bool) {
 		}
 	}
 	return -1, -1, false
+}
+
+func clearScreen() {
+	switch runtime.GOOS {
+	case "windows":
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	default: // linux, mac, etc.
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
 }

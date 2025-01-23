@@ -3,7 +3,6 @@ package board
 import (
 	"errors"
 	"fmt"
-	"math"
 )
 
 // TODO: Implement feature for Possibility Space
@@ -66,14 +65,14 @@ func (b *Board) IsValidMove(row, col, value int) (bool, error) {
 		return false, err
 	}
 
-	if err := b.validateRow(row, value); err != nil {
-		return false, err
+	if !b.validateRow(row, value) {
+		return false, nil
 	}
-	if err := b.validateCol(col, value); err != nil {
-		return false, err
+	if !b.validateCol(col, value) {
+		return false, nil
 	}
-	if err := b.validateBox(row, col, value); err != nil {
-		return false, err
+	if !b.validateBox(row, col, value) {
+		return false, nil
 	}
 
 	// TODO: Implement Check
@@ -86,6 +85,7 @@ func (b *Board) IsSolved() (bool, error) {
 }
 
 func (b *Board) Print() {
+	fmt.Println("===============")
 	for i, row := range b.cells {
 		for j, cell := range row {
 			if (j)%3 == 0 {
@@ -102,6 +102,7 @@ func (b *Board) Print() {
 			fmt.Println()
 		}
 	}
+	fmt.Println("===============")
 }
 
 // ==============================================
@@ -141,19 +142,22 @@ func (b *Board) validateCol(col, value int) bool {
 }
 
 func (b *Board) validateBox(row, col, value int) bool {
+	box_row := (row / 3) * 3
+	box_col := (col / 3) * 3
 
-	box_row := int(math.Ceil(float64((row + 1) / 3)))
-	box_col := int(math.Ceil(float64((col + 1) / 3)))
+	for r := 0; r < 3; r++ {
+		for c := 0; c < 3; c++ {
+			rx := box_row + r
+			cx := box_col + c
 
-	for r := range 3 {
-		for c := range 3 {
-			rx := ((box_row * 3) + r)
-			cx := ((box_col * 3) + c)
+			// Skip the current position we're validating
+			if rx == row && cx == col {
+				continue
+			}
 
 			if b.cells[rx][cx].Value == value {
 				return false
 			}
-
 		}
 	}
 	return true
