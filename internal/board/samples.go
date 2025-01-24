@@ -73,5 +73,6 @@ func LoadPredefinedBoard(b *Board, predefined [9][9]int) error {
 			}
 		}
 	}
+	b.UpdateAllBoardPossibilities()
 	return nil
 }

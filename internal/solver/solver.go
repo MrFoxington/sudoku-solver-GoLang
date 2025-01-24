@@ -62,7 +62,7 @@ func (s *BacktrackingSolver) Solve(b *board.Board, depth int, itter *int) (bool,
 			return true, nil
 		} else {
 			// Reset for Next Itteration
-			b.SetValue(row, col, 0)
+			b.ResetValue(row, col)
 		}
 
 	}

@@ -23,7 +23,6 @@ func run() error {
 	err := board.LoadPredefinedBoard(b, board.BoardEasy)
 	if err != nil {
 		return err
-
 	}
 	b.Print()
 

@@ -8,9 +8,9 @@ import (
 // TODO: Implement feature for Possibility Space
 // TODO: Implement feature for Fixed/Locked Cells for board reset (For Gamification)
 type Cell struct {
-	Value int
-	// Possibilities []int
-	// Fixed         bool
+	Value         int
+	Possibilities []int
+	Fixed         bool
 }
 
 type Board struct {
@@ -51,6 +51,18 @@ func (b *Board) SetValue(row, col, value int) error {
 	}
 
 	b.cells[row][col].Value = value
+	b.cells[row][col].Fixed = true
+	// TODO: Update posibilities of Row, Col & Box
+	return nil
+}
+func (b *Board) ResetValue(row, col int) error {
+
+	if err := validatePosition(row, col); err != nil {
+		return err
+	}
+
+	b.cells[row][col].Value = 0
+	b.cells[row][col].Fixed = false
 	return nil
 }
 
@@ -103,6 +115,90 @@ func (b *Board) Print() {
 		}
 	}
 	fmt.Println("===============")
+}
+
+// ==============================================
+// 					Update Possibilities
+// ==============================================
+
+func (b *Board) UpdateAllBoardPossibilities() error {
+	for i, row := range b.cells {
+		for j := range row {
+			b.updatePossibilities(i, j)
+		}
+	}
+	return nil
+}
+
+func (b *Board) updatePossibilities(row, col int) error {
+	// Escape case for already set values
+	if b.cells[row][col].Fixed {
+		return nil
+	}
+
+	//Get all Values from Row
+	values := []int{}
+	for i := 0; i < 9; i++ {
+		val, err := b.GetValue(row, i)
+		if err != nil {
+			return err
+		}
+		values = append(values, val)
+	}
+
+	//Get all values from Col
+	for i := 0; i < 9; i++ {
+		val, err := b.GetValue(i, col)
+		if err != nil {
+			return err
+		}
+		values = append(values, val)
+	}
+
+	//Get all values from Box
+	box_row := (row / 3) * 3
+	box_col := (col / 3) * 3
+	for r := 0; r < 3; r++ {
+		for c := 0; c < 3; c++ {
+			rx := box_row + r
+			cx := box_col + c
+			val, err := b.GetValue(rx, cx)
+			if err != nil {
+				return err
+			}
+			values = append(values, val)
+		}
+	}
+
+	// TODO: Compare Values to 1-9 Array and find whats missing.
+	// 	- Whatever is missing = possibilities
+	//	- Save Possibilities to Cell
+	possibilities := findMissingNumbers(values)
+	b.cells[row][col].Possibilities = possibilities
+
+	return nil
+}
+
+func findMissingNumbers(numbers []int) []int {
+	// Create a map to track seen numbers
+	seen := make(map[int]bool)
+
+	// Mark all numbers we've seen
+	for _, num := range numbers {
+		if num != 0 { // Ignore empty cells (0s)
+			seen[num] = true
+		}
+	}
+
+	// Collect missing numbers
+	missing := []int{}
+	for i := 1; i <= 9; i++ {
+		if !seen[i] {
+			missing = append(missing, i)
+		}
+	}
+
+	return missing
 }
 
 // ==============================================
